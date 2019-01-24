@@ -14,7 +14,7 @@ def material_instances(request, materialName):
     results = [material_instance.as_json() for material_instance in Material.objects.filter(material_type = material_type)]
     return HttpResponse(results)
 
-'''change'''
+
 def material_total_amount(request,materialName):
     material_type = MaterialType.objects.get(name=materialName)
     material_buy_unit = material_type.buy_unit.name
