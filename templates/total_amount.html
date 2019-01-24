@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Inventory System</title>
+    <style>
+
+    </style>
+</head>
+
+<body>
+    {% for material in materials %}
+        <h2>{{ material.name }}</h2>
+        <p>{{ material.amount }}</p>
+    {% endfor %}
+</body>
+
+</html>
