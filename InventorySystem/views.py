@@ -33,6 +33,7 @@ def total_amounts(request):
 
     for material_type in MaterialType.objects.all():
         material_obj = {'name': material_type.name}
+        material_obj['id'] = material_type.id
         total_amount = 0
         prepared_amount = 0
 
@@ -109,3 +110,12 @@ def remove_material_instance(request, mat_id):
       return HttpResponse('Object deleted!')
     except Material.DoesNotExist:
       return HttpResponse('No object with that id!')
+
+
+@csrf_exempt
+def remove_material_type(request, mat_type_id):
+    try:
+        MaterialType.objects.get(id=mat_type_id).delete()
+        return HttpResponse("Object Deleted!")
+    except MaterialType.DoesNotExist:
+        return HttpResponse('No object with that id!')
