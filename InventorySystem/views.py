@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from .models import Material, MaterialType
-from .forms import MaterialForm
+from .forms import MaterialForm, MaterialTypeForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max
@@ -32,21 +32,34 @@ def total_amounts(request):
     materials = []
 
     for material_type in MaterialType.objects.all():
-        material_obj = {}
-        material_obj['name'] = material_type.name
+        material_obj = {'name': material_type.name}
+        total_amount = 0
+        prepared_amount = 0
 
-        amount = 0
+        if len(Material.objects.filter(material_type=material_type)) == 0:
+            material_obj['total_amount'] = 0
+            material_obj['prepared_amount'] = 0
+            material_obj['buy_unit'] = material_type.buy_unit
+            materials.append(material_obj)
+            continue
+
+        earliest_expiration_material = Material.objects.filter(material_type=material_type).order_by('-expiration_date')[0]
+        expiration_date = earliest_expiration_material.expiration_date
+        material_obj['expiration_date'] = expiration_date
+
         for material in Material.objects.filter(material_type=material_type):
-            amount += material.current_amount
+            total_amount += material.current_amount
+            prepared_amount += material.prepared_amount
 
-        material_obj['amount'] = amount
+        material_obj['total_amount'] = total_amount
+        material_obj['prepared_amount'] = prepared_amount
         material_obj['buy_unit'] = material_type.buy_unit.name
         materials.append(material_obj)
 
-    return JsonResponse({'materials': materials})
+    return render(request, 'total_amount.html', {'materials': materials, 'form': {'mat': {'id': 0}, 'form': MaterialTypeForm()}})
 
 
-def summary(request, materialName):
+def mat_instance_summary(request, materialName):
     material_type = MaterialType.objects.get(name=materialName)
     materials = Material.objects.filter(material_type=material_type)
 
@@ -58,6 +71,7 @@ def summary(request, materialName):
     forms.append({'mat': {'id': 0}, 'form': f})
 
     return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName, 'material_type': material_type.id})
+
 
 
 @csrf_exempt
@@ -76,9 +90,22 @@ def material_instance(request, mat_id):
     return HttpResponse("Hey! You didn't give me any data!")
 
 @csrf_exempt
+def add_material_type(request, mat_type_id):
+    if mat_type_id is not 0:
+        '''material_type_obj = MaterialType.objects.get(id=mat_type_id)
+        f = MaterialTypeForm(request.POST, instance=material_type_obj)
+        f.save()'''
+        return HttpResponse("Aye there's definitely something here already")
+    else:
+        print(request.POST)
+        f = MaterialTypeForm(request.POST)
+        f.save()
+        return HttpResponse("Aye there's definitely something here now")
+
+@csrf_exempt
 def remove_material_instance(request, mat_id):
-  try:
+    try:
       Material.objects.get(id=mat_id).delete()
       return HttpResponse('Object deleted!')
-  except Material.DoesNotExist:
+    except Material.DoesNotExist:
       return HttpResponse('No object with that id!')

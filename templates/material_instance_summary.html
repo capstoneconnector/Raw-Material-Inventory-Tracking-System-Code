@@ -2,55 +2,125 @@
     <title>Material Instance - {{ title }}</title>
 
     <style>
-        .new-form {
-            background: aliceblue;
+        body {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+
+        }
+
+        .instances {
+            float: left;
+            display: flex;
+            flex-direction: row;
+            width: 100%;
         }
 
         .delete-button {
-            background-color: red;
+            background-color: #f44336; /* Green */
+            border: none;
             color: white;
-            border-radius: 5px;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-left: 10px;
+            transition: 0.5s;
         }
 
-        .button-div {
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 250px;
-            background: aliceblue;
+        .delete-button:hover {
+            background-color: #e43326
         }
-        .add-button-div{
-            display: flex;
-            justify-content: flex-end;
-            padding-right: 335px;
-            background: aliceblue;
+
+        .page-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+            transition: 0.5s;
         }
+
+        .page-button:hover {
+            background-color: #3C9F40;
+        }
+
+        .material-span {
+            box-shadow: #00000055 0 0 5px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 20px;
+            padding: 10px;
+            transition: 0.5s;
+        }
+
+        .material-span:hover {
+            box-shadow: #00000088 0 0 5px;
+        }
+
+        form > input {
+            outline: none;
+            margin-left: 10px;
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            width: 90%;
+        }
+
+        form > select {
+            padding: 16px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #f1f1f1;
+            margin-left: 10px;
+            outline: none;
+            width: 90%;
+            display: block;
+            margin-top: 5px;
+            margin-bottom: 10px;
+        }
+
 
     </style>
 </head>
 
 <body>
-    <h1>{{ title }}</h1>
+    <h1>{{ title }} - Inventory</h1>
+    <div class="instances">
     {% for form in forms %}
         {% if form.mat.id != 0 %}
-            <div>
+            <div class="material-span">
+                <span class="form-div">
+                <form method="post" action="/is/material/update/{{ form.mat.id }}">
+                    {{ form.form }}
+                    <br/>
+                </span>
+                    <div class="button-div">
+                        <button class="page-button" type="submit">Submit</button>
+                        <button class="delete-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
+                    </div>
+                </form>
+            </div>
+            </div>
+        {% else %}
+            <div style="display: block;">
+            <h4>Add New Instance:</h4>
         <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}">
             {{ form.form }}
             <br/>
-            <div class="button-div">
-                <button class="submit-button form-button" type="submit">Submit</button>
-                <button class="delete-button form-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
+            <div class = "button-div">
+                 <button class="page-button" type="submit">Add</button>
             </div>
         </form>
             </div>
-        {% else %}
-            <h4>Add New Instance:</h4>
-        <form class="material-form new-form" method="post" action="/is/material/update/{{ form.mat.id }}">
-            {{ form.form }}
-            <br/>
-            <div class = "add-button-div">
-                 <button class="submit-button form-button" type="submit">Add</button>
-            </div>
-        </form>
         {% endif %}
     {% endfor %}
 </body>

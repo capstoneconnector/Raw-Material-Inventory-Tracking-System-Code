@@ -4,15 +4,66 @@
 <head>
     <title>Inventory System</title>
     <style>
+        body {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+        }
 
+        .material-card {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 50%;
+        }
+
+        .material-span {
+            border: black solid 1px;
+            margin-bottom: 15px;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .page-button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            border-radius: 8px;
+        }
+
+        .button-div {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-end;
+        }
     </style>
 </head>
 
 <body>
     {% for material in materials %}
-        <h2>{{ material.name }}</h2>
-        <p>{{ material.amount }}</p>
+        <div class="material-span">
+            <h2>{{ material.name }}</h2>
+            <div class="material-card">
+                <p>Total Amount : {{ material.total_amount }} {{ material.buy_unit}}</p>
+                <p>Prepared Amount : {{ material.prepared_amount }} {{ material.buy_unit }}</p>
+                <p>Expiration : {{ material.expiration_date }}</p>
+            </div>
+            <div class="button-div"><form>
+                <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>
+            </form></div>
+        </div>
     {% endfor %}
+       <h4>Track New Material:</h4>
+        <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}">
+            {{ form.form }}
+            <br/>
+            <div class = "add-button-div">
+                 <button class="page-button" type="submit">Add</button>
+            </div>
+        </form>
 </body>
 
 </html>
