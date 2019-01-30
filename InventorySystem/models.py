@@ -24,8 +24,8 @@ class MaterialType(models.Model):
     name = models.CharField(max_length=100)
     buy_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='buy_unit')
     sell_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='sell_unit')
-    buy_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)
-    sell_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)
+    '''buy_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
+    '''sell_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
 
     def __str__(self):
         return self.name
@@ -41,10 +41,10 @@ class Material(models.Model):
     prepared_amount = models.DecimalField(max_digits=6, decimal_places=2)
     expiration_date = models.DateField()
     material_type = models.ForeignKey(MaterialType, on_delete=models.CASCADE)
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
+    '''restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)'''
 
     def __str__(self):
-        return str(self.material_type.name) + ' - ' + str(self.expiration_date)
+        return str(self.id) + ' - ' + str(self.material_type.name) + ' - ' + str(self.expiration_date)
 
     def as_json(self):
         return dict(

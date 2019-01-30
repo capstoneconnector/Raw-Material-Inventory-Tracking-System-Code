@@ -1,0 +1,56 @@
+<head>
+    <title>Material Instance - {{ title }}</title>
+
+    <style>
+        .new-form {
+            background: aliceblue;
+        }
+
+        .delete-button {
+            background-color: red;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .button-div {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 250px;
+            background: aliceblue;
+        }
+        .add-button-div{
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 335px;
+            background: aliceblue;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h1>{{ title }}</h1>
+    {% for form in forms %}
+        {% if form.mat.id != 0 %}
+            <div>
+        <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}">
+            {{ form.form }}
+            <br/>
+            <div class="button-div">
+                <button class="submit-button form-button" type="submit">Submit</button>
+                <button class="delete-button form-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
+            </div>
+        </form>
+            </div>
+        {% else %}
+            <h4>Add New Instance:</h4>
+        <form class="material-form new-form" method="post" action="/is/material/update/{{ form.mat.id }}">
+            {{ form.form }}
+            <br/>
+            <div class = "add-button-div">
+                 <button class="submit-button form-button" type="submit">Add</button>
+            </div>
+        </form>
+        {% endif %}
+    {% endfor %}
+</body>
