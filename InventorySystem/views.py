@@ -44,7 +44,7 @@ def total_amounts(request):
             materials.append(material_obj)
             continue
 
-        earliest_expiration_material = Material.objects.filter(material_type=material_type).order_by('-expiration_date')[0]
+        earliest_expiration_material = Material.objects.filter(material_type=material_type).latest('-expiration_date')
         expiration_date = earliest_expiration_material.expiration_date
         material_obj['expiration_date'] = expiration_date
 
