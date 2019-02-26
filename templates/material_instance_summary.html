@@ -116,14 +116,16 @@
                         <form method="post" action="/is/material/update/{{ form.mat.id }}">
                             {{ form.form }}
                             <br/>
-                    </span>
+
                         <div class="button-div">
                             <button class="page-button" type="submit">Submit</button>
                             <button class="delete-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
                         </div>
-                    </form>
+                        </form>
+                    </span>
                 </div>
-                </div>
+        </div>
+                <br/>
             {% else %}
                 <div style="display: block;">
                 <h4>Add New Instance:</h4>
