@@ -5,6 +5,8 @@ from .forms import MaterialForm, MaterialTypeForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Max
+from django.shortcuts import redirect
+
 
 # Create your views here.
 
@@ -36,10 +38,13 @@ def total_amounts(request):
         material_obj['id'] = material_type.id
         total_amount = 0
         prepared_amount = 0
+        total_initial_amount = 0
+        used_amount = 0
 
         if len(Material.objects.filter(material_type=material_type)) == 0:
             material_obj['total_amount'] = 0
             material_obj['prepared_amount'] = 0
+            material_obj['used_amount'] = 0
             material_obj['buy_unit'] = material_type.buy_unit
             materials.append(material_obj)
             continue
@@ -51,9 +56,13 @@ def total_amounts(request):
         for material in Material.objects.filter(material_type=material_type):
             total_amount += material.current_amount
             prepared_amount += material.prepared_amount
+            total_initial_amount += material.initial_amount
+
+        used_amount = total_initial_amount - total_amount
 
         material_obj['total_amount'] = total_amount
         material_obj['prepared_amount'] = prepared_amount
+        material_obj['used_amount'] = used_amount
         material_obj['buy_unit'] = material_type.buy_unit.name
         materials.append(material_obj)
 
@@ -81,7 +90,10 @@ def material_instance(request, mat_id):
         material_obj = Material.objects.get(id=mat_id)
         f = MaterialForm(request.POST, instance=material_obj)
         f.save()
-        return HttpResponse("You've successfuly made a change!")
+        print("You've successfuly made a change!")
+        return HttpResponse("You've successfully updated an instance!")
+        #redirect_url = 'material/summary/' + str(material_obj.material_type)
+        #return redirect('/is/material/summary/' + str(material_obj.material_type))
     else:
         print(request.POST)
         f = MaterialForm(request.POST)

@@ -93,34 +93,41 @@
 </head>
 
 <body>
-    <h1>{{ title }} - Inventory</h1>
-    <div class="instances">
-    {% for form in forms %}
-        {% if form.mat.id != 0 %}
-            <div class="material-span">
-                <span class="form-div">
-                <form method="post" action="/is/material/update/{{ form.mat.id }}">
-                    {{ form.form }}
-                    <br/>
-                </span>
-                    <div class="button-div">
-                        <button class="page-button" type="submit">Submit</button>
-                        <button class="delete-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
-                    </div>
-                </form>
-            </div>
-            </div>
-        {% else %}
-            <div style="display: block;">
-            <h4>Add New Instance:</h4>
-        <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}">
-            {{ form.form }}
-            <br/>
-            <div class = "button-div">
-                 <button class="page-button" type="submit">Add</button>
-            </div>
-        </form>
-            </div>
-        {% endif %}
-    {% endfor %}
+    {% block content %}
+    {% if user.is_authenticated %}
+        <h1>{{ title }} - Inventory</h1>
+        <div class="instances">
+        {% for form in forms %}
+            {% if form.mat.id != 0 %}
+                <div class="material-span">
+                    <span class="form-div">
+                        <form method="post" action="/is/material/update/{{ form.mat.id }}">
+                            {{ form.form }}
+                            <br/>
+                    </span>
+                        <div class="button-div">
+                            <button class="page-button" type="submit">Submit</button>
+                            <button class="delete-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
+                        </div>
+                    </form>
+                </div>
+                </div>
+            {% else %}
+                <div style="display: block;">
+                <h4>Add New Instance:</h4>
+            <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}">
+                {{ form.form }}
+                <br/>
+                <div class = "button-div">
+                     <button class="page-button" type="submit">Add</button>
+                </div>
+            </form>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">login</a>
+    {% endif %}
+    {% endblock %}
 </body>

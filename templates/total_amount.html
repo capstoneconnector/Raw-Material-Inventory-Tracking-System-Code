@@ -12,7 +12,7 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            width: 50%;
+            width: 60%;
         }
 
         .material-span {
@@ -57,28 +57,41 @@
 </head>
 
 <body>
-    {% for material in materials %}
-        <div class="material-span">
-            <h2>{{ material.name }}</h2>
-            <div class="material-card">
-                <p>Total Amount : {{ material.total_amount }} {{ material.buy_unit}}</p>
-                <p>Prepared Amount : {{ material.prepared_amount }} {{ material.buy_unit }}</p>
-                <p>Expiration : {{ material.expiration_date }}</p>
-            </div>
-            <div class="button-div"><form>
-                <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>
-                <button class="delete-button" type="submit" formaction="/is/material/type/remove/{{ material.id }}">Remove</button>
-            </form></div>
+
+    {% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            <h1>Inventory Summary - Two Cats Cafe</h1>
+            <p><a href="{% url 'logout' %}">logout</a></p>
         </div>
-    {% endfor %}
-       <h4>Track New Material:</h4>
-        <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}">
-            {{ form.form }}
-            <br/>
-            <div class = "add-button-div">
-                 <button class="page-button" type="submit">Add</button>
+        {% for material in materials %}
+            <div class="material-span">
+                <h2>{{ material.name }}</h2>
+                <div class="material-card">
+                    <p>Total Amount : {{ material.total_amount }} {{ material.buy_unit}}</p>
+                    <p>Prepared Amount : {{ material.prepared_amount }} {{ material.buy_unit }}</p>
+                    <p>Used Amount : {{ material.used_amount }} {{ material.buy_unit }}</p>
+                    <p>Expiration : {{ material.expiration_date }}</p>
+                </div>
+                <div class="button-div"><form>
+                    <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>
+                    <button class="delete-button" type="submit" formaction="/is/material/type/remove/{{ material.id }}">Remove</button>
+                </form></div>
             </div>
-        </form>
+        {% endfor %}
+           <h4>Track New Material:</h4>
+            <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}">
+                {{ form.form }}
+                <br/>
+                <div class = "add-button-div">
+                     <button class="page-button" type="submit">Add</button>
+                </div>
+            </form>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">login</a>
+    {% endif %}
+    {% endblock %}
 </body>
 
 </html>
