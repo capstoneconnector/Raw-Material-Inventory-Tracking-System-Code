@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 
@@ -24,6 +24,8 @@ class MaterialType(models.Model):
     name = models.CharField(max_length=100)
     buy_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='buy_unit')
     sell_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='sell_unit')
+    updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    date_updated = models.DateField(null=True)
     '''buy_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
     '''sell_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
 

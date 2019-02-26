@@ -12,7 +12,7 @@
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            width: 60%;
+            width: 80%;
         }
 
         .material-span {
@@ -84,6 +84,9 @@
                     <p>Prepared Amount : {{ material.prepared_amount }} {{ material.buy_unit }}</p>
                     <p>Used Amount : {{ material.used_amount }} {{ material.buy_unit }}</p>
                     <p>Expiration : {{ material.expiration_date }}</p>
+                    <p>Updated By : {{ material.updated_by }}</p>
+                    <p>Last Updated : {{ material.date_updated}}</p>
+
                 </div>
                 <div class="button-div"><form>
                     <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>

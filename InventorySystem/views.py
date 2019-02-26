@@ -5,6 +5,8 @@ from .forms import MaterialForm, MaterialTypeForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from datetime import datetime, timedelta
+from django.utils import timezone
+from django.shortcuts import redirect
 
 
 
@@ -53,6 +55,7 @@ def total_amounts(request):
         expiration_date = earliest_expiration_material.expiration_date
         material_obj['expiration_date'] = expiration_date
 
+
         for material in Material.objects.filter(material_type=material_type):
             total_amount += material.current_amount
             prepared_amount += material.prepared_amount
@@ -64,6 +67,8 @@ def total_amounts(request):
         material_obj['prepared_amount'] = prepared_amount
         material_obj['used_amount'] = used_amount
         material_obj['buy_unit'] = material_type.buy_unit.name
+        material_obj['updated_by'] = material_type.updated_by
+        material_obj['date_updated'] = material_type.date_updated.strftime('%Y-%m-%d')
         materials.append(material_obj)
 
     return render(request, 'total_amount.html', {'materials': materials, 'form': {'mat': {'id': 0}, 'form': MaterialTypeForm()}})
@@ -77,7 +82,7 @@ def mat_instance_summary(request, materialName):
     for mat in materials:
         form_data = {'mat': mat, 'form': MaterialForm(instance=mat)}
         forms.append(form_data)
-    f = MaterialForm(initial={'material_type': material_type, 'updated_by':request.user.username})
+    f = MaterialForm(initial={'material_type': material_type, 'updated_by': request.user.username})
     forms.append({'mat': {'id': 0}, 'form': f})
 
     return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName, 'material_type': material_type.id})
@@ -91,6 +96,9 @@ def material_instance(request, mat_id):
         f = MaterialForm(request.POST, instance=material_obj)
         f.save()
         print("You've successfuly made a change!")
+        material_type_obj = MaterialType.objects.get(id=material_obj.material_type.id)
+        material_type_obj.updated_by = request.user
+        material_type_obj.date_updated = timezone.now()
         return HttpResponse("You've successfully updated an instance!")
         #redirect_url = 'material/summary/' + str(material_obj.material_type)
         #return redirect('/is/material/summary/' + str(material_obj.material_type))
@@ -98,9 +106,15 @@ def material_instance(request, mat_id):
         print(request.POST)
         f = MaterialForm(request.POST)
         f.save()
+        material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
+        material_type_obj.updated_by = request.user
+        material_type_obj.date_updated = timezone.now()
         #notification_days = int(f.data.get('notification_days'))
         #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
-        return HttpResponse("You've successfully added an instance!")
+        return redirect('/is/material/summary/' + material_type_obj.name)
+
+
+        print("You've successfully added an instance!")
 
     return HttpResponse("Hey! You didn't give me any data!")
 
@@ -113,15 +127,20 @@ def add_material_type(request, mat_type_id):
         return HttpResponse("Aye there's definitely something here already")
     else:
         print(request.POST)
+        print(timezone.now())
         f = MaterialTypeForm(request.POST)
         f.save()
-        return HttpResponse("Aye there's definitely something here now")
+        return redirect('/is/material/')
+        print("Aye there's definitely something here now")
 
 @csrf_exempt
 def remove_material_instance(request, mat_id):
     try:
-      Material.objects.get(id=mat_id).delete()
-      return HttpResponse('Object deleted!')
+      material = Material.objects.get(id=mat_id)
+      material_type = material.material_type.name
+      material.delete()
+      print('Object deleted!')
+      return redirect('/is/material/summary/' + material_type)
     except Material.DoesNotExist:
       return HttpResponse('No object with that id!')
 
@@ -130,6 +149,8 @@ def remove_material_instance(request, mat_id):
 def remove_material_type(request, mat_type_id):
     try:
         MaterialType.objects.get(id=mat_type_id).delete()
-        return HttpResponse("Object Deleted!")
+        print("object deleted!")
+        return redirect('/is/material')
+
     except MaterialType.DoesNotExist:
         return HttpResponse('No object with that id!')
