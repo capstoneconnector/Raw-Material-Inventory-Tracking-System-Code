@@ -2,6 +2,7 @@ from .models import Material, MaterialType
 from django.forms import ModelForm
 
 
+
 class MaterialForm(ModelForm):
     class Meta:
         model = Material

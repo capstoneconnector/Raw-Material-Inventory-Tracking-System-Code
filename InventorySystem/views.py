@@ -4,8 +4,8 @@ from .models import Material, MaterialType
 from .forms import MaterialForm, MaterialTypeForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Max
-from django.shortcuts import redirect
+from datetime import datetime, timedelta
+
 
 
 # Create your views here.
@@ -77,7 +77,7 @@ def mat_instance_summary(request, materialName):
     for mat in materials:
         form_data = {'mat': mat, 'form': MaterialForm(instance=mat)}
         forms.append(form_data)
-    f = MaterialForm(initial={'material_type': material_type})
+    f = MaterialForm(initial={'material_type': material_type, 'updated_by':request.user.username})
     forms.append({'mat': {'id': 0}, 'form': f})
 
     return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName, 'material_type': material_type.id})
@@ -98,6 +98,8 @@ def material_instance(request, mat_id):
         print(request.POST)
         f = MaterialForm(request.POST)
         f.save()
+        #notification_days = int(f.data.get('notification_days'))
+        #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
         return HttpResponse("You've successfully added an instance!")
 
     return HttpResponse("Hey! You didn't give me any data!")

@@ -22,6 +22,10 @@
             border-radius: 10px;
         }
 
+        .log-out{
+            text-align: right;
+        }
+
         .page-button {
             background-color: #4CAF50; /* Green */
             border: none;
@@ -61,8 +65,16 @@
     {% block content %}
     {% if user.is_authenticated %}
         <div>
+            <div class = log-out>
+                <p>Currently logged in as:
+                    <b>
+                        {{ request.user.username }}
+                    </b>
+                    |
+                    <a href="{% url 'logout' %}">logout</a>
+                </p>
+             </div>
             <h1>Inventory Summary - Two Cats Cafe</h1>
-            <p><a href="{% url 'logout' %}">logout</a></p>
         </div>
         {% for material in materials %}
             <div class="material-span">

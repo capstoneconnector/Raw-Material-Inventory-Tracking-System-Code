@@ -40,6 +40,7 @@ class Material(models.Model):
     current_amount = models.DecimalField(max_digits=6, decimal_places=2)
     prepared_amount = models.DecimalField(max_digits=6, decimal_places=2)
     expiration_date = models.DateField()
+    '''notification_days = models.IntegerField()'''
     material_type = models.ForeignKey(MaterialType, on_delete=models.CASCADE)
     '''restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)'''
 
