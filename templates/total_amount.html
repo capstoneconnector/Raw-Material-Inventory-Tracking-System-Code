@@ -8,18 +8,40 @@
             font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
         }
 
+        h1{
+            text-align: center;
+        }
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 80%;
+        }
+
+        td, th{
+            text-align: left;
+            padding: 4px
+        }
+
+        tr:nth-child(even){
+
+        }
         .material-card {
             display: flex;
             flex-direction: row;
             justify-content: space-between;
-            width: 80%;
+            width: 90%;
+            margin-left: 50px;
         }
 
         .material-span {
-            border: black solid 1px;
             margin-bottom: 15px;
             padding: 5px;
             border-radius: 10px;
+            width: 90%;
+            align-self: center;
+            margin-left: 180px;
+
         }
 
         .log-out{
@@ -56,6 +78,11 @@
             display: flex;
             flex-direction: row;
             justify-content: flex-end;
+            margin-right: 250px;
+        }
+        .hr-div{
+            margin-left: 180px;
+            margin-right: 220px;
         }
     </style>
 </head>
@@ -74,31 +101,44 @@
                     <a href="{% url 'logout' %}">logout</a>
                 </p>
              </div>
-            <h1>Inventory Summary - Two Cats Cafe</h1>
+            <h1>Inventory Tracking System</h1>
         </div>
         {% for material in materials %}
             <div class="material-span">
                 <h2>{{ material.name }}</h2>
                 <div class="material-card">
-                    <p>Total Amount : {{ material.total_amount }} {{ material.buy_unit}}</p>
-                    <p>Prepared Amount : {{ material.prepared_amount }} {{ material.buy_unit }}</p>
-                    <p>Used Amount : {{ material.used_amount }} {{ material.buy_unit }}</p>
-                    <p>Expiration : {{ material.expiration_date }}</p>
-                    <p>Updated By : {{ material.updated_by }}</p>
-                    <p>Last Updated : {{ material.date_updated}}</p>
-
+                    <table>
+                        <tr>
+                            <th>Total Amount</th>
+                            <th>Prepared Amount</th>
+                            <th>Used Amount</th>
+                            <th>Expiration</th>
+                            <th>Updated By</th>
+                            <th>Last Updated</th>
+                        </tr>
+                        <tr>
+                            <td>{{ material.total_amount }} {{ material.buy_unit}}</td>
+                            <td>{{ material.prepared_amount }} {{ material.buy_unit }}</td>
+                            <td>{{ material.used_amount }} {{ material.buy_unit }}</td>
+                            <td>{{ material.expiration_date }}</td>
+                            <td>{{ material.updated_by }}</td>
+                            <td>{{ material.date_updated}}</td>
+                        </tr>
+                    </table>
                 </div>
                 <div class="button-div"><form>
                     <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>
                     <button class="delete-button" type="submit" formaction="/is/material/type/remove/{{ material.id }}">Remove</button>
                 </form></div>
             </div>
+            <div class = "hr-div"><hr></div>
         {% endfor %}
            <h4>Track New Material:</h4>
             <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}">
                 {{ form.form }}
                 <br/>
                 <div class = "add-button-div">
+                    <br/>
                      <button class="page-button" type="submit">Add</button>
                 </div>
             </form>
