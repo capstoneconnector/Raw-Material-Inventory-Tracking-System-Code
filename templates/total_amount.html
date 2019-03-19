@@ -11,6 +11,14 @@
         h1{
             text-align: center;
         }
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            padding: 5px;
+            background-color: white;
+        }
+
 
         table {
             font-family: arial, sans-serif;
@@ -91,7 +99,7 @@
 
     {% block content %}
     {% if user.is_authenticated %}
-        <div>
+        <div class = "sticky">
             <div class = log-out>
                 <p>Currently logged in as:
                     <b>
