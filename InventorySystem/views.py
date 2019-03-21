@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from .models import Material, MaterialType
+from .models import Material, MaterialType, Activity
 from .forms import MaterialForm, MaterialTypeForm
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -73,6 +73,15 @@ def total_amounts(request):
 
     return render(request, 'total_amount.html', {'materials': materials, 'form': {'mat': {'id': 0}, 'form': MaterialTypeForm()}})
 
+def activity_summary(request):
+    activities = []
+
+    for activity in Activity.objects.all():
+        activities.append(activity)
+
+    return render(request, 'activity_page.html', {'activities':activities})
+
+
 
 def mat_instance_summary(request, materialName):
     material_type = MaterialType.objects.get(name=materialName)
@@ -99,6 +108,9 @@ def material_instance(request, mat_id):
         material_type_obj = MaterialType.objects.get(id=material_obj.material_type.id)
         material_type_obj.updated_by = request.user
         material_type_obj.date_updated = timezone.now()
+
+        add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user)
+
         return HttpResponse("You've successfully updated an instance!")
         #redirect_url = 'material/summary/' + str(material_obj.material_type)
         #return redirect('/is/material/summary/' + str(material_obj.material_type))
@@ -109,8 +121,13 @@ def material_instance(request, mat_id):
         material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
         material_type_obj.updated_by = request.user
         material_type_obj.date_updated = timezone.now()
+
+        material_name = material_type_obj.name
         #notification_days = int(f.data.get('notification_days'))
         #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
+
+        add_activity(material_name, "INVENTORY ADDED", request.user)
+
         return redirect('/is/material/summary/' + material_type_obj.name)
 
 
@@ -129,9 +146,16 @@ def add_material_type(request, mat_type_id):
         print(request.POST)
         print(timezone.now())
         f = MaterialTypeForm(request.POST)
+        mat_type_name = f.data.get('name')
         f.save()
+
+        add_activity(mat_type_name, "TRACKED MATERIAL ADDED", request.user)
+
         return redirect('/is/material/')
         print("Aye there's definitely something here now")
+@csrf_exempt
+def add_activity(material_type, action, user):
+    activity = Activity.objects.create(current_date =  timezone.now(), user = user, material_type = material_type, action = action)
 
 @csrf_exempt
 def remove_material_instance(request, mat_id):
@@ -140,7 +164,11 @@ def remove_material_instance(request, mat_id):
       material_type = material.material_type.name
       material.delete()
       print('Object deleted!')
+
+      add_activity(material_type, "INVENTORY REMOVED", request.user)
+
       return redirect('/is/material/summary/' + material_type)
+
     except Material.DoesNotExist:
       return HttpResponse('No object with that id!')
 
@@ -148,8 +176,13 @@ def remove_material_instance(request, mat_id):
 @csrf_exempt
 def remove_material_type(request, mat_type_id):
     try:
+        mat = MaterialType.objects.get(id=mat_type_id)
+        mat_name = mat.name
         MaterialType.objects.get(id=mat_type_id).delete()
         print("object deleted!")
+
+        add_activity(mat_name, "TRACKED MATERIAL REMOVED", request.user)
+
         return redirect('/is/material')
 
     except MaterialType.DoesNotExist:

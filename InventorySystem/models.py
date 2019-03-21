@@ -42,12 +42,11 @@ class Material(models.Model):
     current_amount = models.DecimalField(max_digits=6, decimal_places=2)
     prepared_amount = models.DecimalField(max_digits=6, decimal_places=2)
     expiration_date = models.DateField()
-    '''notification_days = models.IntegerField()'''
     material_type = models.ForeignKey(MaterialType, on_delete=models.CASCADE)
-    '''restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)'''
+
 
     def __str__(self):
-        return str(self.id) + ' - ' + str(self.material_type.name) + ' - ' + str(self.expiration_date)
+        return str(self.id)
 
     def as_json(self):
         return dict(
@@ -55,3 +54,13 @@ class Material(models.Model):
             material_type=self.material_type.name,
             current_amount=self.current_amount,
             buy_unit=self.material_type.buy_unit.name)
+
+class Activity(models.Model):
+    id = models.AutoField(primary_key=True)
+    current_date = models.DateField()
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    material_type = models.CharField(max_length=50)
+    action = models.CharField(max_length=50)
+
+    def __str__(self):
+        return str(self.material_type) + " " + str(self.action) + " by " + str(self.user) + " [ " + str(self.current_date) + " ] "

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory System</title>
+    <style>
+        body {
+            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+        }
+
+        h1{
+            text-align: center;
+        }
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            padding: 5px;
+            background-color: white;
+        }
+
+        td, th{
+            text-align: left;
+            padding: 4px;
+            width: 25%;
+        }
+
+        tr:nth-child(even){
+
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed ;
+        }
+
+
+        .log-out{
+            text-align: right;
+        }
+
+         .material-card {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            width: 90%;
+            margin-left: 50px;
+        }
+
+        .material-span {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 10px;
+            width: 90%;
+            align-self: center;
+            margin-left: 180px;
+
+        }
+
+
+
+        .hr-div{
+            margin-left: 180px;
+            margin-right: 220px;
+        }
+    </style>
+</head>
+<body>
+{% block content %}
+    {% if user.is_authenticated %}
+        <div class = "sticky">
+            <div class = log-out>
+                <p>Currently logged in as:
+                    <b>
+                        {{ request.user.username }}
+                    </b>
+                    |
+                    <a href="{% url 'logout' %}">logout</a>
+                </p>
+             </div>
+            <h1>Inventory Tracking System</h1>
+
+            <div class="material-span">
+                    <div class="material-card">
+                        <table>
+                             <tr>
+                                <th>Action</th>
+                                <th>Material Type</th>
+                                <th>User</th>
+                                <th>Action Date</th>
+                            </tr>
+                        </table>
+                    </div>
+            </div>
+        </div>
+        
+        {% for activity in activities %}
+            <div class="material-span">
+                <div class="material-card">
+                    <table>
+                        <tr>
+                            {% if activity.action == "TRACKED MATERIAL REMOVED" or activity.action == "INVENTORY REMOVED"  %}
+                                <td><font color="red">{{activity.action}}</font></td>
+                            {% elif activity.action == "TRACKED MATERIAL ADDED" or activity.action == "INVENTORY ADDED"  %}
+                                <td><font color="black">{{activity.action}}</font></td>
+                            {% else %}
+                                <td><font color="gray">{{activity.action}}</font></td>
+                            {% endif %}
+                            <td>{{activity.material_type}}</td>
+                            <td>{{activity.user}}</td>
+                            <td>{{activity.current_date}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endblock %}
+</body>
+</html>
