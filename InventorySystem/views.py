@@ -155,7 +155,7 @@ def add_material_type(request, mat_type_id):
         print("Aye there's definitely something here now")
 @csrf_exempt
 def add_activity(material_type, action, user):
-    activity = Activity.objects.create(current_date =  timezone.now(), user = user, material_type = material_type, action = action)
+    activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action)
 
 @csrf_exempt
 def remove_material_instance(request, mat_id):

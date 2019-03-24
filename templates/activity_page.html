@@ -47,22 +47,51 @@
             width: 90%;
             margin-left: 50px;
         }
-
         .material-span {
             margin-bottom: 5px;
             padding: 5px;
             border-radius: 10px;
             width: 90%;
             align-self: center;
-            margin-left: 180px;
+            margin-left: 12%;
+            margin-right: 12%;
 
         }
-
-
-
         .hr-div{
             margin-left: 180px;
             margin-right: 220px;
+        }
+
+        /* ---Styling for Nav Bar--- */
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            margin-left: 12%;
+            margin-right: 12%;
+
+        }
+
+        li {
+          float: left;
+        }
+
+        li a {
+          display: block;
+          color: white;
+          text-align: center;
+          padding: 14px 16px;
+          text-decoration: none;
+        }
+
+        li a:hover:not(.active) {
+          background-color: grey;
+        }
+
+        .active {
+          background-color: silver;
         }
     </style>
 </head>
@@ -80,6 +109,13 @@
                 </p>
              </div>
             <h1>Inventory Tracking System</h1>
+
+            <ul>
+              <li><a href="material">Summary</a></li>
+              <li><a class="active" href="activity">Activity</a></li>
+              <li style="float:right"><a href="/admin">Admin Panel</a></li>
+            </ul>
+            <br/>
 
             <div class="material-span">
                     <div class="material-card">
