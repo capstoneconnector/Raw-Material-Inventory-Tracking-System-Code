@@ -75,7 +75,7 @@ def total_amounts(request):
 
 def activity_summary(request):
 
-    return render(request, 'activity_page.html', {'activities':Activity.objects.all().order_by("-current_date")})
+    return render(request, 'activity_page.html', {'activities':Activity.objects.all().order_by("-id")})
 
 
 

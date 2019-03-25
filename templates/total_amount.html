@@ -103,7 +103,7 @@
             margin-right: 12%;
         }
         .add-button-div{
-            margin-left: 60%;
+            margin: 10px
         }
 
 
@@ -217,9 +217,7 @@
             <h4 style="margin-left: 12%">Track New Material:</h4>
             <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}" style="margin-left: 12%">
                 {{ form.form }}
-                <br/>
-                <div class = "add-button-div">
-                    <br/>
+                <div class = "add-button-div" style="display: inline-block">
                      <button class="page-button" type="submit">Track</button>
                 </div>
             </form>

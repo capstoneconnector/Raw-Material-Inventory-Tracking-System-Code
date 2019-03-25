@@ -7,6 +7,10 @@
 
         }
 
+        h1{
+            text-align: center;
+        }
+
         .instances {
             float: left;
             display: flex;
@@ -15,80 +19,114 @@
         }
 
         .delete-button {
-            background-color: #f44336; /* Green */
+            background-color: white;
             border: none;
-            color: white;
-            padding: 15px 32px;
+            color: dimgray;
+            padding: 7px 14px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
             border-radius: 8px;
-            margin-left: 10px;
             transition: 0.5s;
+            cursor: pointer;
         }
 
-        .delete-button:hover {
-            background-color: #e43326
+        .delete-button:hover{
+            color: darkgray;
         }
+
 
         .page-button {
-            background-color: #4CAF50; /* Green */
+            background-color: #F96262;
             border: none;
             color: white;
-            padding: 15px 32px;
+            padding: 7px 14px;
             text-align: center;
             text-decoration: none;
             display: inline-block;
             font-size: 16px;
             border-radius: 8px;
             transition: 0.5s;
+            margin: 10px;
+            cursor: pointer;
+
+
         }
 
         .page-button:hover {
-            background-color: #3C9F40;
+            background-color: #A45050;
         }
 
         .material-span {
-            box-shadow: #00000055 0 0 5px;
-            border-radius: 10px;
-            display: inline-block;
-            margin: 20px;
-            padding: 10px;
-            transition: 0.5s;
+            margin-left: 9%;
+            margin-right: 9%;
         }
         .log-out{
             text-align: right;
+            margin-right: 12%;
         }
 
-        .material-span:hover {
-            box-shadow: #00000088 0 0 5px;
+
+
+        div.sticky {
+            position: -webkit-sticky;
+            position: sticky;
+            top: 0;
+            padding: 5px;
+            background-color: white;
         }
 
-        form > input {
-            outline: none;
-            margin-left: 10px;
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 10px;
-            padding: 16px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #f1f1f1;
-            width: 90%;
+          td, th{
+            text-align: left;
+            padding: 4px;
+            width: 25%;
         }
 
-        form > select {
-            padding: 16px 20px;
-            border: none;
-            border-radius: 4px;
-            background-color: #f1f1f1;
-            margin-left: 10px;
-            outline: none;
-            width: 90%;
-            display: block;
-            margin-top: 5px;
-            margin-bottom: 10px;
+        tr:nth-child(even){
+
+        }
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+            table-layout: fixed ;
+        }
+
+
+          /* ---Styling for Nav Bar--- */
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: black;
+            margin-left: 12%;
+            margin-right: 12%;
+
+        }
+
+        li {
+          float: left;
+        }
+
+        li a {
+          display: block;
+          color: white;
+          text-align: center;
+          padding: 7px 13px;
+          text-decoration: none;
+          font-size: smaller;
+
+        }
+
+        li a:hover:not(.active) {
+          background-color: grey;
+        }
+
+        .active {
+          background-color: silver;
         }
 
 
@@ -98,44 +136,55 @@
 <body>
     {% block content %}
     {% if user.is_authenticated %}
-        <div class = log-out>
+         <div class = "sticky">
+            <div class = log-out>
                 <p>Currently logged in as:
                     <b>
                         {{ request.user.username }}
                     </b>
                     |
-                    <a href="{% url 'logout' %}">logout</a>
+                    <a href="/accounts/login/">logout</a>
                 </p>
              </div>
-        <h1>{{ title }} - Inventory</h1>
+            <h1>Inventory Tracking System</h1>
+            <ul>
+              <li><a class="active" href="/is/material">Summary</a></li>
+              <li><a href="/is/activity">Activity</a></li>
+              <li style="float:right"><a href="/admin">Admin Panel</a></li>
+            </ul>
+            <br/>
+
+            </div>
+        </div>
+        <h2 style="margin-left: 9%">{{ title }} - Inventory</h2>
         <div class="instances">
         {% for form in forms %}
             {% if form.mat.id != 0 %}
                 <div class="material-span">
-                    <span class="form-div">
-                        <form method="post" action="/is/material/update/{{ form.mat.id }}">
-                            {{ form.form }}
+                     <form method="post" action="/is/material/update/{{ form.mat.id }}">
+                         {{ form.form }}
+                         <div class="button-div" style = "display: inline-block">
                             <br/>
-
-                        <div class="button-div">
-                            <button class="page-button" type="submit">Submit</button>
+                            <button class="page-button" type="submit">Submit Changes</button>
                             <button class="delete-button" type="submit" formaction="/is/material/delete/{{ form.mat.id }}">Remove</button>
                         </div>
-                        </form>
-                    </span>
+                    </form>
+
+
                 </div>
+
         </div>
-                <br/>
+        <br/>
             {% else %}
-                <div style="display: block;">
-                <h4>Add New Instance:</h4>
-            <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}">
-                {{ form.form }}
-                <br/>
-                <div class = "button-div">
-                     <button class="page-button" type="submit">Add</button>
-                </div>
-            </form>
+                <div class = "material-span" style="display: block;">
+                    <h4>Add New Instance:</h4>
+                    <form class="material-form" method="post" action="/is/material/update/{{ form.mat.id }}" >
+                        {{ form.form }}
+
+                        <div class = "button-div" style = "display: inline-block">
+                             <button class="page-button" type="submit">Add</button>
+                        </div>
+                    </form>
                 </div>
             {% endif %}
         {% endfor %}
