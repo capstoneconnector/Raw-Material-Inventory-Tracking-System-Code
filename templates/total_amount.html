@@ -5,7 +5,7 @@
     <title>Inventory System</title>
     <style>
         body {
-            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+            font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
         }
 
         h1{
@@ -55,10 +55,11 @@
 
         .log-out{
             text-align: right;
+            margin-right: 12%;
         }
 
         .page-button {
-            background-color: #4CAF50; /* Green */
+            background-color: #F96262; /* Green */
             border: none;
             color: white;
             padding: 15px 32px;
@@ -67,12 +68,14 @@
             display: inline-block;
             font-size: 16px;
             border-radius: 8px;
+            cursor:pointer;
+
         }
 
         .delete-button {
-            background-color: #f44336;
+            background-color: white;
             border: none;
-            color: white;
+            color: black;
             padding: 15px 32px;
             text-align: center;
             text-decoration: none;
@@ -81,6 +84,12 @@
             border-radius: 8px;
             margin-left: 10px;
             transition: 0.5s;
+            cursor:pointer;
+
+        }
+
+        .page-button:hover{
+           background-color:  #A45050;
         }
 
         .button-div {
@@ -93,8 +102,16 @@
             margin-left: 12%;
             margin-right: 12%;
         }
+        .add-button-div{
+            margin-left: 60%;
+        }
+
+
+
 
         /* ---Styling for Nav Bar--- */
+
+
         ul {
             list-style-type: none;
             margin: 0;
@@ -114,8 +131,10 @@
           display: block;
           color: white;
           text-align: center;
-          padding: 14px 16px;
+          padding: 7px 13px;
           text-decoration: none;
+          font-size: smaller;
+
         }
 
         li a:hover:not(.active) {
@@ -125,7 +144,12 @@
         .active {
           background-color: silver;
         }
+
+        /* modal stuff */
+
     </style>
+
+
 </head>
 
 <body>
@@ -139,18 +163,25 @@
                         {{ request.user.username }}
                     </b>
                     |
-                    <a href="{% url 'logout' %}">logout</a>
+                    <a href="/accounts/login/">logout</a>
                 </p>
              </div>
             <h1>Inventory Tracking System</h1>
-            <br/>
             <ul>
               <li><a class="active" href="material">Summary</a></li>
               <li><a href="/is/activity">Activity</a></li>
               <li style="float:right"><a href="/admin">Admin Panel</a></li>
             </ul>
             <br/>
+
+
+
+
+
+            </div>
         </div>
+
+
         {% for material in materials %}
             <div class="material-span">
                 <h2>{{ material.name }}</h2>
@@ -175,21 +206,25 @@
                     </table>
                 </div>
                 <div class="button-div"><form>
-                    <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">View</button>
+                    <button class="page-button" type="submit" formaction="/is/material/summary/{{ material.name }}">Inventory</button>
                     <button class="delete-button" type="submit" formaction="/is/material/type/remove/{{ material.id }}">Remove</button>
                 </form></div>
             </div>
             <div class = "hr-div"><hr></div>
         {% endfor %}
-           <h4>Track New Material:</h4>
-            <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}">
+        <!--- Form --->
+
+            <h4 style="margin-left: 12%">Track New Material:</h4>
+            <form class="material-form new-form" method="post" action="/is/material/type/update/{{ form.mat.id }}" style="margin-left: 12%">
                 {{ form.form }}
                 <br/>
                 <div class = "add-button-div">
                     <br/>
-                     <button class="page-button" type="submit">Add</button>
+                     <button class="page-button" type="submit">Track</button>
                 </div>
             </form>
+
+
     {% else %}
         <p>You are not logged in</p>
         <a href="{% url 'login' %}">login</a>

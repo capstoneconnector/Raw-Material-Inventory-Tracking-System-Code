@@ -74,12 +74,8 @@ def total_amounts(request):
     return render(request, 'total_amount.html', {'materials': materials, 'form': {'mat': {'id': 0}, 'form': MaterialTypeForm()}})
 
 def activity_summary(request):
-    activities = []
 
-    for activity in Activity.objects.all():
-        activities.append(activity)
-
-    return render(request, 'activity_page.html', {'activities':activities})
+    return render(request, 'activity_page.html', {'activities':Activity.objects.all().order_by("-current_date")})
 
 
 

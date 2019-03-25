@@ -5,7 +5,7 @@
     <title>Inventory System</title>
     <style>
         body {
-            font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+            font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
         }
 
         h1{
@@ -38,6 +38,7 @@
 
         .log-out{
             text-align: right;
+            margin-right: 12%;
         }
 
          .material-card {
@@ -57,12 +58,15 @@
             margin-right: 12%;
 
         }
+
+
         .hr-div{
             margin-left: 180px;
             margin-right: 220px;
         }
 
         /* ---Styling for Nav Bar--- */
+
         ul {
             list-style-type: none;
             margin: 0;
@@ -82,8 +86,10 @@
           display: block;
           color: white;
           text-align: center;
-          padding: 14px 16px;
+          padding: 7px 13px;
           text-decoration: none;
+          font-size: smaller;
+
         }
 
         li a:hover:not(.active) {
@@ -105,7 +111,7 @@
                         {{ request.user.username }}
                     </b>
                     |
-                    <a href="{% url 'logout' %}">logout</a>
+                    <a href="/accounts/login/">logout</a>
                 </p>
              </div>
             <h1>Inventory Tracking System</h1>
