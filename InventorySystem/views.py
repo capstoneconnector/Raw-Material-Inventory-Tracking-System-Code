@@ -125,7 +125,8 @@ def material_instance(request, mat_id):
         #notification_days = int(f.data.get('notification_days'))
         #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
 
-        add_activity(material_name, "INVENTORY ADDED", request.user, f.data.get('id'))
+        mat_instance_id = Material.objects.last()
+        add_activity(material_name, "INVENTORY ADDED", request.user, mat_instance_id.id)
 
         return redirect('/is/material/summary/' + material_type_obj.name)
 
@@ -148,7 +149,7 @@ def add_material_type(request, mat_type_id):
         mat_type_name = f.data.get('name')
         f.save()
 
-        add_activity(mat_type_name, "TRACKED MATERIAL ADDED", request.user)
+        add_activity(mat_type_name, "TRACKED MATERIAL ADDED", request.user, None)
 
         return redirect('/is/material/')
         print("Aye there's definitely something here now")
@@ -184,7 +185,7 @@ def remove_material_type(request, mat_type_id):
         MaterialType.objects.get(id=mat_type_id).delete()
         print("object deleted!")
 
-        add_activity(mat_name, "TRACKED MATERIAL REMOVED", request.user)
+        add_activity(mat_name, "TRACKED MATERIAL REMOVED", request.user, None)
 
         return redirect('/is/material')
 
