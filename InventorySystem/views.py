@@ -47,7 +47,7 @@ def total_amounts(request):
             material_obj['total_amount'] = 0
             material_obj['prepared_amount'] = 0
             material_obj['used_amount'] = 0
-            material_obj['buy_unit'] = material_type.buy_unit
+            material_obj['unit'] = material_type.unit
             materials.append(material_obj)
             continue
 
@@ -66,12 +66,14 @@ def total_amounts(request):
         material_obj['total_amount'] = total_amount
         material_obj['prepared_amount'] = prepared_amount
         material_obj['used_amount'] = used_amount
-        material_obj['buy_unit'] = material_type.buy_unit.name
+        material_obj['unit'] = material_type.unit.name
         material_obj['updated_by'] = material_type.updated_by
         material_obj['date_updated'] = material_type.date_updated.strftime('%Y-%m-%d')
         materials.append(material_obj)
 
-    return render(request, 'total_amount.html', {'materials': materials, 'form': {'mat': {'id': 0}, 'form': MaterialTypeForm()}})
+    form_data = {'mat': {'id':0}, 'form': MaterialTypeForm(initial= {'updated_by': request.user, 'date_updated':timezone.now()})}
+
+    return render(request, 'total_amount.html', {'materials': materials, 'form': form_data})
 
 def activity_summary(request):
 
@@ -105,7 +107,8 @@ def material_instance(request, mat_id):
         material_type_obj.updated_by = request.user
         material_type_obj.date_updated = timezone.now()
 
-        add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user)
+
+        add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user, mat_id)
 
         return HttpResponse("You've successfully updated an instance!")
         #redirect_url = 'material/summary/' + str(material_obj.material_type)
@@ -122,7 +125,7 @@ def material_instance(request, mat_id):
         #notification_days = int(f.data.get('notification_days'))
         #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
 
-        add_activity(material_name, "INVENTORY ADDED", request.user)
+        add_activity(material_name, "INVENTORY ADDED", request.user, f.data.get('id'))
 
         return redirect('/is/material/summary/' + material_type_obj.name)
 
@@ -150,8 +153,12 @@ def add_material_type(request, mat_type_id):
         return redirect('/is/material/')
         print("Aye there's definitely something here now")
 @csrf_exempt
-def add_activity(material_type, action, user):
-    activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action)
+def add_activity(material_type, action, user, instance_id):
+
+    if instance_id != 0:
+        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action, stock_code=instance_id)
+    else:
+        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action)
 
 @csrf_exempt
 def remove_material_instance(request, mat_id):
@@ -161,7 +168,7 @@ def remove_material_instance(request, mat_id):
       material.delete()
       print('Object deleted!')
 
-      add_activity(material_type, "INVENTORY REMOVED", request.user)
+      add_activity(material_type, "INVENTORY REMOVED", request.user, mat_id)
 
       return redirect('/is/material/summary/' + material_type)
 

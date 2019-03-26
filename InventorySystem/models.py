@@ -22,8 +22,7 @@ class UnitLookup(models.Model):
 class MaterialType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
-    buy_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='buy_unit')
-    sell_unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='sell_unit')
+    unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='nit')
     updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     date_updated = models.DateField(null=True)
     '''buy_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
@@ -61,6 +60,7 @@ class Activity(models.Model):
     user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     material_type = models.CharField(max_length=50)
     action = models.CharField(max_length=50)
+    stock_code = models.CharField(max_length=50, null=True)
 
     def __str__(self):
         return str(self.material_type) + " " + str(self.action) + " by " + str(self.user) + " [ " + str(self.current_date) + " ] "

@@ -129,6 +129,7 @@
                              <tr>
                                 <th>Action</th>
                                 <th>Material Type</th>
+                                <th>Stock Code</th>
                                 <th>User</th>
                                 <th>Action Date</th>
                             </tr>
@@ -150,6 +151,12 @@
                                 <td><font color="gray">{{activity.action}}</font></td>
                             {% endif %}
                             <td>{{activity.material_type}}</td>
+                            {% if activity.stock_code != None %}
+                                <td>Stock Code #{{ activity.stock_code }}</td>
+                            {% else %}
+                                <td> </td>
+                            {% endif %}
+
                             <td>{{activity.user}}</td>
                             <td>{{activity.current_date}}</td>
                         </tr>
