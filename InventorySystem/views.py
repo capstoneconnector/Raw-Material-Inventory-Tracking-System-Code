@@ -72,10 +72,10 @@ def total_amounts(request):
 
     return render(request, 'total_amount.html', {'materials': materials, 'form': form_data})
 
-def mat_instance_summary(request, materialName):
+def mat_instance_summary(request, materialName, message):
     material_type = MaterialType.objects.get(name=materialName)
     materials = Material.objects.filter(material_type=material_type)
-
+    message = message
     forms = []
     for mat in materials:
         form_data = {'mat': mat, 'form': MaterialForm(instance=mat)}
@@ -83,43 +83,55 @@ def mat_instance_summary(request, materialName):
     f = MaterialForm(initial={'material_type': material_type, 'updated_by': request.user.username})
     forms.append({'mat': {'id': 0}, 'form': f})
 
-    return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName, 'material_type': material_type.id})
+    return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName,
+                                                              'material_type': material_type.id, 'message': message})
 @csrf_exempt
 def material_instance(request, mat_id):
+    message = ""
     if mat_id is not 0:
-        material_obj = Material.objects.get(id=mat_id)
-        f = MaterialForm(request.POST, instance=material_obj)
-        f.save()
-        print("You've successfuly made a change!")
-        material_type_obj = MaterialType.objects.get(id=material_obj.material_type.id)
-        material_type_obj.updated_by = request.user
-        material_type_obj.date_updated = timezone.now()
+        try:
+            material_obj = Material.objects.get(id=mat_id)
+            f = MaterialForm(request.POST, instance=material_obj)
+            f.save()
 
+            material_type_obj = MaterialType.objects.get(id=material_obj.material_type.id)
+            material_type_obj.updated_by = request.user
+            material_type_obj.date_updated = timezone.now()
 
-        add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user, mat_id)
+            add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user, mat_id)
+            message = str(mat_id) + " Updated"
 
-        return HttpResponse("You've successfully updated an instance!")
+            return mat_instance_summary(request, material_type_obj.name, message)
+        
+        except ValueError:
+            return HttpResponse("Invalid Input")
+
         #redirect_url = 'material/summary/' + str(material_obj.material_type)
         #return redirect('/is/material/summary/' + str(material_obj.material_type))
     else:
-        print(request.POST)
-        f = MaterialForm(request.POST)
-        f.save()
-        material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
-        material_type_obj.updated_by = request.user
-        material_type_obj.date_updated = timezone.now()
 
-        material_name = material_type_obj.name
-        #notification_days = int(f.data.get('notification_days'))
-        #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
+        try:
+            f = MaterialForm(request.POST)
+            f.save()
+            material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
+            material_type_obj.updated_by = request.user
+            material_type_obj.date_updated = timezone.now()
 
-        mat_instance_id = Material.objects.last()
-        add_activity(material_name, "INVENTORY ADDED", request.user, mat_instance_id.id)
+            material_name = material_type_obj.name
+            #notification_days = int(f.data.get('notification_days'))
+            #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
 
-        return redirect('/is/material/summary/' + material_type_obj.name)
+            mat_instance_id = Material.objects.last()
+            add_activity(material_name, "INVENTORY ADDED", request.user, mat_instance_id.id)
+
+            message = str(mat_instance_id.id) + " Added"
+
+            return mat_instance_summary(request, material_type_obj.name, message)
 
 
-        print("You've successfully added an instance!")
+            print("You've successfully added an instance!")
+        except ValueError:
+            return HttpResponse("Invalid Input")
 
     return HttpResponse("Hey! You didn't give me any data!")
 @csrf_exempt
