@@ -15,14 +15,10 @@ from django.shortcuts import redirect
 
 def index(request):
     return HttpResponse('<h1>Inventory System Home!</h1>')
-
-
 def material_instances(request, materialName):
     material_type = MaterialType.objects.get(name=materialName)
     results = [material_instance.as_json() for material_instance in Material.objects.filter(material_type = material_type)]
     return HttpResponse(results)
-
-
 def material_total_amount(request,materialName):
     material_type = MaterialType.objects.get(name=materialName)
     material_buy_unit = material_type.buy_unit.name
@@ -30,6 +26,7 @@ def material_total_amount(request,materialName):
     for material in Material.objects.filter(material_type=material_type):
         amount += material.current_amount
     return JsonResponse({'name': materialName, 'total_amount': amount, 'unit': material_buy_unit})
+
 
 
 def total_amounts(request):
@@ -75,12 +72,6 @@ def total_amounts(request):
 
     return render(request, 'total_amount.html', {'materials': materials, 'form': form_data})
 
-def activity_summary(request):
-
-    return render(request, 'activity_page.html', {'activities':Activity.objects.all().order_by("-id")})
-
-
-
 def mat_instance_summary(request, materialName):
     material_type = MaterialType.objects.get(name=materialName)
     materials = Material.objects.filter(material_type=material_type)
@@ -93,9 +84,6 @@ def mat_instance_summary(request, materialName):
     forms.append({'mat': {'id': 0}, 'form': f})
 
     return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName, 'material_type': material_type.id})
-
-
-
 @csrf_exempt
 def material_instance(request, mat_id):
     if mat_id is not 0:
@@ -134,6 +122,20 @@ def material_instance(request, mat_id):
         print("You've successfully added an instance!")
 
     return HttpResponse("Hey! You didn't give me any data!")
+@csrf_exempt
+def remove_material_instance(request, mat_id):
+    try:
+      material = Material.objects.get(id=mat_id)
+      material_type = material.material_type.name
+      material.delete()
+      print('Object deleted!')
+
+      add_activity(material_type, "INVENTORY REMOVED", request.user, mat_id)
+
+      return redirect('/is/material/summary/' + material_type)
+
+    except Material.DoesNotExist:
+      return HttpResponse('No object with that id!')
 
 @csrf_exempt
 def add_material_type(request, mat_type_id):
@@ -154,30 +156,6 @@ def add_material_type(request, mat_type_id):
         return redirect('/is/material/')
         print("Aye there's definitely something here now")
 @csrf_exempt
-def add_activity(material_type, action, user, instance_id):
-
-    if instance_id != 0:
-        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action, stock_code=instance_id)
-    else:
-        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action)
-
-@csrf_exempt
-def remove_material_instance(request, mat_id):
-    try:
-      material = Material.objects.get(id=mat_id)
-      material_type = material.material_type.name
-      material.delete()
-      print('Object deleted!')
-
-      add_activity(material_type, "INVENTORY REMOVED", request.user, mat_id)
-
-      return redirect('/is/material/summary/' + material_type)
-
-    except Material.DoesNotExist:
-      return HttpResponse('No object with that id!')
-
-
-@csrf_exempt
 def remove_material_type(request, mat_type_id):
     try:
         mat = MaterialType.objects.get(id=mat_type_id)
@@ -191,3 +169,14 @@ def remove_material_type(request, mat_type_id):
 
     except MaterialType.DoesNotExist:
         return HttpResponse('No object with that id!')
+
+def activity_summary(request):
+
+    return render(request, 'activity_page.html', {'activities':Activity.objects.all().order_by("-id")})
+@csrf_exempt
+def add_activity(material_type, action, user, instance_id):
+
+    if instance_id != 0:
+        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action, stock_code=instance_id)
+    else:
+        activity = Activity.objects.create(current_date=timezone.now(), user=user, material_type=material_type, action=action)

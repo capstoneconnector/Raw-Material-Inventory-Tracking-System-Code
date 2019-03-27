@@ -2,15 +2,13 @@ from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
 
-
-class Restaurant(models.Model):
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=30)
-
-    def __str__(self):
-        return self.name
+'''models.py includes models that structure the relational database.'''
 
 
+'''
+UnitLookup is used to make objects that represent units 
+of measurement for Materials.
+'''
 class UnitLookup(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=15)
@@ -18,15 +16,19 @@ class UnitLookup(models.Model):
     def __str__(self):
         return self.name
 
-
+'''
+MaterialType is used to make objects categorizing Materials into
+a collection. (e.g. Bacon, Lamb, Beef, etc.) These MaterialTypes
+are defined by a name, unit of measurement, a user ID for who previously
+updated a Material of its type, and a date updated for when the changes 
+by the user were made. 
+'''
 class MaterialType(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     unit = models.ForeignKey(UnitLookup, on_delete=models.CASCADE, related_name='nit')
     updated_by = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     date_updated = models.DateField(null=True)
-    '''buy_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
-    '''sell_unit_cost = models.DecimalField(max_digits=6, decimal_places=2)'''
 
     def __str__(self):
         return self.name
@@ -34,7 +36,12 @@ class MaterialType(models.Model):
         return dict(
             material_type_name=self.name)
 
-
+'''
+Material is used to make objects that are Inventory of a Material Type.
+A Material is defined with an initial amount, a current amount, a prepared
+amount, an expiration date for the Material, and the material type it falls
+under.
+'''
 class Material(models.Model):
     id = models.AutoField(primary_key=True)
     initial_amount = models.DecimalField(max_digits=6, decimal_places=2)
@@ -54,6 +61,15 @@ class Material(models.Model):
             current_amount=self.current_amount,
             buy_unit=self.material_type.buy_unit.name)
 
+
+'''
+The Activity model creates objects that describe user activity.
+An Activity is defined by a current date (the date of when the 
+activity was performed, a user who performed the activity, 
+material type the activity effected, the action made, and 
+a stock code (describing the specific Material in a Material Type
+that is being edited). 
+'''
 class Activity(models.Model):
     id = models.AutoField(primary_key=True)
     current_date = models.DateField()
