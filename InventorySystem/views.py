@@ -75,7 +75,7 @@ def total_amounts(request):
 def mat_instance_summary(request, materialName, message):
     material_type = MaterialType.objects.get(name=materialName)
     materials = Material.objects.filter(material_type=material_type)
-    message = message
+    display_message = message
     forms = []
     for mat in materials:
         form_data = {'mat': mat, 'form': MaterialForm(instance=mat)}
@@ -84,32 +84,31 @@ def mat_instance_summary(request, materialName, message):
     forms.append({'mat': {'id': 0}, 'form': f})
 
     return render(request, 'material_instance_summary.html', {'forms': forms, 'title': materialName,
-                                                              'material_type': material_type.id, 'message': message})
+                                                              'material_type': material_type.id, 'message': display_message})
+
 @csrf_exempt
 def material_instance(request, mat_id):
-    message = ""
     if mat_id is not 0:
         try:
             material_obj = Material.objects.get(id=mat_id)
             f = MaterialForm(request.POST, instance=material_obj)
             f.save()
-
+            print("You've successfuly made a change!")
             material_type_obj = MaterialType.objects.get(id=material_obj.material_type.id)
             material_type_obj.updated_by = request.user
             material_type_obj.date_updated = timezone.now()
 
+
             add_activity(material_type_obj.name, "INVENTORY UPDATED", request.user, mat_id)
-            message = str(mat_id) + " Updated"
+
+            message = "Stock " + str(mat_id) + " updated"
 
             return mat_instance_summary(request, material_type_obj.name, message)
-        
         except ValueError:
-            return HttpResponse("Invalid Input")
-
-        #redirect_url = 'material/summary/' + str(material_obj.material_type)
-        #return redirect('/is/material/summary/' + str(material_obj.material_type))
+            message = "A value was inputted incorrectly when trying to update   ."
+            material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
+            return mat_instance_summary(request, material_type_obj.name, message)
     else:
-
         try:
             f = MaterialForm(request.POST)
             f.save()
@@ -118,22 +117,19 @@ def material_instance(request, mat_id):
             material_type_obj.date_updated = timezone.now()
 
             material_name = material_type_obj.name
-            #notification_days = int(f.data.get('notification_days'))
-            #notification_date = datetime.strptime(f.data.get('expiration_date'), '%Y-%m-%d') - timedelta(days=notification_days)
 
             mat_instance_id = Material.objects.last()
             add_activity(material_name, "INVENTORY ADDED", request.user, mat_instance_id.id)
 
-            message = str(mat_instance_id.id) + " Added"
+            message = "Stock " + str(mat_instance_id.id) + " added"
 
+            return mat_instance_summary(request, material_name, message)
+        except ValueError:
+            message = "A value was inputted incorrectly when trying to add inventory."
+            material_type_obj = MaterialType.objects.get(id=f.data.get('material_type'))
             return mat_instance_summary(request, material_type_obj.name, message)
 
 
-            print("You've successfully added an instance!")
-        except ValueError:
-            return HttpResponse("Invalid Input")
-
-    return HttpResponse("Hey! You didn't give me any data!")
 @csrf_exempt
 def remove_material_instance(request, mat_id):
     try:
@@ -144,7 +140,8 @@ def remove_material_instance(request, mat_id):
 
       add_activity(material_type, "INVENTORY REMOVED", request.user, mat_id)
 
-      return redirect('/is/material/summary/' + material_type)
+      message = "Stock Removed"
+      return mat_instance_summary(request, material_type, message)
 
     except Material.DoesNotExist:
       return HttpResponse('No object with that id!')
@@ -177,7 +174,7 @@ def remove_material_type(request, mat_type_id):
 
         add_activity(mat_name, "TRACKED MATERIAL REMOVED", request.user, None)
 
-        return redirect('/is/material')
+        return redirect('/is/material/')
 
     except MaterialType.DoesNotExist:
         return HttpResponse('No object with that id!')

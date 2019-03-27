@@ -115,6 +115,12 @@
 
         }
 
+        .message-div{
+            color: #F96262;
+            font-style: italic;
+            display: inline;
+        }
+
 
           /* ---Styling for Nav Bar--- */
 
@@ -175,11 +181,12 @@
               <li style="float:right"><a href="/admin">Admin Panel</a></li>
             </ul>
             <br/>
-
             </div>
         </div>
-        <div>{{messag}}</div>
-        <h2 style="margin-left: 12%">{{ title }} - Inventory</h2>
+        <h2 style="margin-left: 12%; margin-right: 1%;display: inline-block;">{{ title }} - Inventory</h2>
+        {% if message != "current" %}
+            <div class="message-div">{{ message }}</div>
+        {% endif %}
         <div class="instances">
         {% for form in forms %}
             {% if form.mat.id != 0 %}
